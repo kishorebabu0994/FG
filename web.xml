@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+  http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+  version="2.4">
+  
+  
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+          /WEB-INF/mpower-security.xml
+          /WEB-INF/mpower-service.xml
+           /WEB-INF/mpower-data.xml  
+     </param-value>
+  </context-param>
+
+  <context-param> 
+     <param-name>webAppRootKey</param-name>
+     <param-value>cas.root</param-value>  
+  </context-param>
+
+<!-- <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>webapp.root.one</param-value>
+</context-param> -->
+
+<!--Added By Narendra.p on 26-12-2020 for session killing in all nodes-->
+
+    <servlet>
+      <servlet-name>killAllNodes</servlet-name>
+      <servlet-class>org.jasig.cas.client.session.KillAllNodes</servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>killAllNodes</servlet-name>
+      <url-pattern>/ManageClusterSession</url-pattern>
+    </servlet-mapping>
+
+<!--Added by Narndra.p for killing session in other node-->
+
+    <filter>
+       <filter-name>CAS Single Sign Out Filter</filter-name>
+       <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+    <init-param>
+        <param-name>moduleName</param-name>
+        <param-value>sts</param-value>
+    </init-param>
+    <init-param>
+        <param-name>peersUrls</param-name>
+        <param-value>http://172.20.34.31:9004</param-value>
+    </init-param>
+   </filter>
+
+  <filter-mapping>       
+     <filter-name>CAS Single Sign Out Filter</filter-name> 
+     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+      <init-param>
+      <param-name>targetBean</param-name>
+      <param-value>filterChainProxy</param-value>
+    </init-param> 
+  </filter>
+
+    <filter-mapping>
+      <filter-name>springSecurityFilterChain</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+   <session-config>
+      <session-timeout>15</session-timeout>
+   </session-config>
+   
+  <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+   <listener>
+      <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+    </listener>
+  
+  <listener>
+         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+
+   <servlet>
+    <servlet-name>mpower</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>    
+  
+    <servlet-mapping>
+        <servlet-name>mpower</servlet-name>
+        <url-pattern>*.htm</url-pattern>
+    </servlet-mapping>
+
+  <servlet-mapping>
+        <servlet-name>mpower</servlet-name>
+        <url-pattern>/dwr/*</url-pattern>
+    </servlet-mapping>
+  <servlet> 
+
+    <servlet-name>XSQLServlet</servlet-name>  
+    <servlet-class>oracle.xml.xsql.XSQLServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+  <servlet-name>XSQLServlet</servlet-name>
+  <url-pattern>*.xsql</url-pattern>
+  </servlet-mapping>
+ 
+    <servlet>
+        <servlet-name>CXFServlet</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CXFServlet</servlet-name>
+        <url-pattern>/services/*</url-pattern>
+    </servlet-mapping>
+
+
+  <!-- <filter>
+    <filter-name>XSS</filter-name>
+    <filter-class>com.phoenix.rbac.security.mPowerXSSFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>XSS</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+ -->
+		 <servlet>
+        <servlet-name>ReadFromCard</servlet-name>
+        <servlet-class>com.fg.sts.servlet.ReadFromCard</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ReadFromCard</servlet-name>
+        <url-pattern>/ReadFromCard</url-pattern>
+    </servlet-mapping>
+
+<!-- 1 -->
+	    <!-- <servlet>
+        <servlet-name>MeterkeysServlet</servlet-name>
+        <servlet-class> com.fg.sts.controller.MeterkeysServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MeterkeysServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping> -->
+<!-- 2 -->
+
+		    <!-- <servlet>
+        <servlet-name>MeterSpecificServlet</servlet-name>
+        <servlet-class> com.fg.sts.controller.MeterSpecificServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MeterSpecificServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping> -->
+
+<!-- 3 -->
+	 <!-- <servlet>
+        <servlet-name>NonMeterSpecificServlet</servlet-name>
+        <servlet-class> com.fg.sts.controller.NonMeterSpecificServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>NonMeterSpecificServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping> -->
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <error-page>
+    <exception-type>java.lang.Exception</exception-type>
+    <location>/uncaughtException.htm</location>
+  </error-page>
+  
+</web-app>
